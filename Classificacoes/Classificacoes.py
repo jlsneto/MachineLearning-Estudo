@@ -51,4 +51,4 @@ for i in resposta:
     else:
         print("Cachorro")
 
-print("Taxa de Acertos",taxaAcerto)
+print("Taxa de Acerto",taxaAcerto)
