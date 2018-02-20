@@ -18,21 +18,37 @@ marcacoes = [1,1,1,-1,-1,-1]
 #algoritmo usado para treinar o modelo
 from sklearn.naive_bayes import MultinomialNB
 
-misterioso = [1,1,1]
-misterioso2 = [1,0,0]
-
-teste = [misterioso,misterioso2]
-
 modelo = MultinomialNB()
 
 #treinar
 modelo.fit(dados, marcacoes)
 
+misterioso1 = [1,1,1]
+misterioso2 = [1,0,0]
+misterioso3 = [0,1,1]
+
+testes = [misterioso1,misterioso2,misterioso3]
+
 #predizer
-resposta = modelo.predict(teste)
+resposta = modelo.predict(testes)
+
+#valor esperado
+marcacoes_teste = [-1, 1, -1]
+
+diferencas = resposta - marcacoes_teste
+
+acertos = [i for i in diferencas if i == 0]
+erros = [i for i in diferencas if i != 0]
+
+totalAcertos = len(acertos)
+totalElementos = len(testes)
+
+taxaAcerto = (totalAcertos/totalElementos)*100
 
 for i in resposta:
     if(i == 1):
         print("Porco")
     else:
         print("Cachorro")
+
+print("Taxa de Acertos",taxaAcerto)
