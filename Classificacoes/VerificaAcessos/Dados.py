@@ -24,3 +24,20 @@ def carregarAcessos():
     return X,Y
     
         
+def carregarBuscas():
+
+    X = []
+    Y = []
+
+    arquivo = open("busca.csv","rt")
+    print("lendo arquivo...")
+    leitor = csv.reader(arquivo)
+
+    next(leitor)
+
+    for acessou_home,busca,logado,comprou in leitor:
+        dado = [int(acessou_home),busca,int(logado)]
+        X.append(dado)
+        Y.append(int(comprou))
+
+    return X, Y
