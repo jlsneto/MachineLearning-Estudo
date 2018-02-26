@@ -2,7 +2,7 @@
 #1 - separar 10% para teste e 90% para treino
 #resultado: 88.89% acertos
 import pandas as pd
-
+from collections import Counter
 #retorna data frames (df) usando pandas
 df = pd.read_csv('busca.csv')
 
@@ -18,13 +18,6 @@ Ydummies_df = Y_df
 #retornar Arrays das dummies
 X = Xdummies_df.values
 Y = Ydummies_df.values
-
-
-#eficácia do algoritmo que chuta tudo 0 ou 1
-acerto_de_um = list(Y).count(1)
-acerto_de_zero = list(Y).count(1)
-taxa_de_acerto_base = (max(acerto_de_um,acerto_de_zero)/len(Y))*100
-print("Taxa de acerto base: %.2f" %(taxa_de_acerto_base))
 
 
 #retorna 90% da quantidade de marcações
@@ -54,12 +47,10 @@ modelo.fit(treino_dados,treino_marcacoes)
 #Mandando os mesmos dados para testar
 resposta = modelo.predict(teste_dados)
 
-diferencas = resposta - teste_marcacoes
+acertos = (resposta==teste_marcacoes)
 
-# se a diferença for 0, então grava
-acertos = [i for i in diferencas if i == 0]
-
-total_acertos = len(acertos)
+#soma os true, pois são em python true é 1 e false é 0
+total_acertos = sum(acertos)
 
 total_elementos = len(teste_dados)
 
@@ -70,6 +61,10 @@ print("Taxa de Acerto %.2f" %(taxa_acertos))
 print("Total Registros Testados: %.2f" %(total_elementos))
 
 
+#eficácia do algoritmo que chuta tudo
+acerto_base = max(Counter(teste_marcacoes).values())
+taxa_de_acerto_base = (acerto_base/len(teste_marcacoes))*100
+print("Taxa de acerto base: %.2f" %(taxa_de_acerto_base))
 
 
 
