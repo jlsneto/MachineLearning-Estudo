@@ -1,0 +1,67 @@
+Title,Text,AnswerAccepted
+"Calculate Picture ID for Gallery With Ads","I have a picture gallery where after every three pictures, an ad is displayed (gotta pay those bills 😀).
+
+So in an example scenario, my gallery would have 11 slides, of which there are 9 pictures and 2 ads, like this:
+
+[![gallery][1]][1]
+
+In the top row of this drawing are the zero-bases indexes of the slides, which I have in an array.
+
+What I need to come up with now is a formula to calculate the index of the picture corresponding to a given slide ID (the numbers in the bottom row).
+
+So for `slideIndex === 2`, I need `picIndex === 2`, for `slideIndex === 5`, I need `picIndex === 4` and for `slideIndex === 8`, the result would be `picIndex === 6`.
+
+For a slide that contains an ad, I would like to have the index of the last pic, so for `slideIndex === 3` → `picIndex === 2`.
+
+I do have a working solution already, where I just use a `for` loop, but this seems really lame and cumbersome:
+
+<!-- begin snippet: js hide: false console: true babel: false -->
+
+<!-- language: lang-js -->
+
+    const adInterval = 3; // show an ad every 3 pics
+
+    function calculatePicIndex(slideIndex) {
+        let picCount = 0;
+        let picIndex = -1;
+        for (let i = 0; i <= slideIndex; i++) {
+            if (++picCount > adInterval) {
+                picCount = 0;
+            } else {
+                picIndex++;
+            }
+        }
+        return picIndex;
+    }
+
+    for (let i = 0; i < 11; i++) {
+        console.log(`slide index: ${i} – pic index: ${calculatePicIndex(i)}`);
+    }
+
+<!-- end snippet -->
+
+I'm sure there is a much more elegant solution with a simple math formula, so basically, it's more a math question than a JavaScript question:
+
+**How can I refactor the above code to avoid the loop and calculate the number through a math formula?**
+
+I have tried something like this:
+
+    const picIndex = Math.floor(slideIndex / adInterval);
+
+But that gives me incorrect values which are more and more off as slide index increases.
+
+  [1]: https://i.stack.imgur.com/IR4Nm.png","
+
+<!-- begin snippet: js hide: false console: true babel: false -->
+
+<!-- language: lang-js -->
+
+    slideIndex = 8;
+    adInterval = 3;
+    var picindex = slideIndex - slideIndex%adInterval || slideIndex
+    console.log(picindex)
+
+
+<!-- end snippet -->
+
+"
