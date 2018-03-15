@@ -1,35 +1,17 @@
-"""
 import pandas as pd
+from ClassCleaner import TextCleaner
+import nltk
 
-posts = pd.read_csv('postsUnico.csv')
+posts = pd.read_csv('posts.csv')
 
 questionText = posts['Text']
 
 answerText = posts['AnswerAccepted']
 
+cleaner = TextCleaner()
 
-"""
+questionTextClean = [cleaner.filter(text) for text in questionText]
 
-import requests
-from bs4 import BeautifulSoup
 
-url='https://stackoverflow.com/questions/47588415/calculate-picture-id-for-gallery-with-ads'
-
-r = requests.get(url)
-
-soup = BeautifulSoup(r.text, 'html.parser')
-
-#divs = soup.findAll("div", class_='post-text')
-
-post = soup.findAll("div", {"class":"post-text"})
-
-teste = [i.findAll("p") for i in post]
-teste2 = [i.findAll("div", {"class":"snippet-code"}) for i in post]
-
-"""
-for div in divs:
-  lista = div.findAll('p')
-  teste.append(lista)
-  #for i in lista:
-      #teste.append(x.replace('\0', '') for x in i)
-"""
+#nltk.download('punkt')
+textosQuebrados = [nltk.tokenize.word_tokenize(frase) for frase in questionTextClean]
