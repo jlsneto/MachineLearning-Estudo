@@ -10,7 +10,11 @@ class TextCleaner:
         body = str(body)
         import re
         regex = [
-            [r'<!--$.+$-->',' '],
+
+	    [r'<!--[^*]*-->',' '],
+            [r'`.+?`',' '],
+
+            
             [r'<code>.+?</code>',' '],
             [r'<[^>]+>\s+(?=<)|<[^>]+>',''],
             [r'&#xA;',' '],
@@ -28,6 +32,15 @@ class TextCleaner:
             body = re.sub(r[0],r[1],body)
 
         return body
+"""
+   def filterNoRegex(self, body):
+
+       body = str(body)
+       tags = [
+            '<div class=""snippet-code"">'
+           ]
+       posicaoInicialDoCodigo = [
+"""
 
 if __name__ == '__main__':
     from pprint import pprint

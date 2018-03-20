@@ -1,0 +1,661 @@
+AcceptedAnswerId,Body
+"47588539","<p>I have a picture gallery where after every three pictures, an ad is displayed (gotta pay those bills 😀).</p>
+
+<p>So in an example scenario, my gallery would have 11 slides, of which there are 9 pictures and 2 ads, like this:</p>
+
+<p><a href=""https://i.stack.imgur.com/IR4Nm.png"" rel=""nofollow noreferrer""><img src=""https://i.stack.imgur.com/IR4Nm.png"" alt=""gallery""></a></p>
+
+<p>In the top row of this drawing are the zero-based indexes of the slides, which I have in an array.</p>
+
+<p>What I need to come up with now is a formula to calculate the index of the picture corresponding to a given slide ID (the numbers in the bottom row).</p>
+
+<p>So for <code>slideIndex === 2</code>, I need <code>picIndex === 2</code>, for <code>slideIndex === 5</code>, I need <code>picIndex === 4</code> and for <code>slideIndex === 8</code>, the result would be <code>picIndex === 6</code>.</p>
+
+<p>For a slide that contains an ad, I would like to have the index of the last pic, so for <code>slideIndex === 3</code> → <code>picIndex === 2</code>.</p>
+
+<p>I do have a working solution already, where I just use a <code>for</code> loop, but this seems really lame and cumbersome:</p>
+
+<p><div class=""snippet"" data-lang=""js"" data-hide=""false"" data-console=""true"" data-babel=""false"">
+<div class=""snippet-code"">
+<pre class=""snippet-code-js lang-js prettyprint-override""><code>const adInterval = 3; // show an ad every 3 pics
+
+function calculatePicIndex(slideIndex) {
+    let picCount = 0;
+    let picIndex = -1;
+    for (let i = 0; i &lt;= slideIndex; i++) {
+        if (++picCount &gt; adInterval) {
+            picCount = 0;
+        } else {
+            picIndex++;
+        }
+    }
+    return picIndex;
+}
+
+for (let i = 0; i &lt; 11; i++) {
+    console.log(`slide index: ${i} – pic index: ${calculatePicIndex(i)}`);
+}</code></pre>
+</div>
+</div>
+</p>
+
+<p>I'm sure there is a much more elegant solution with a simple math formula, so basically, it's more a math question than a JavaScript question:</p>
+
+<p><strong>How can I refactor the above code to avoid the loop and calculate the number through a math formula?</strong></p>
+
+<p>I have tried something like this:</p>
+
+<pre><code>const picIndex = slideIndex - Math.floor(slideIndex / adInterval);
+</code></pre>
+
+<p>But that gives me incorrect values which are more and more off as slide index increases.</p>
+
+<p>See JSFiddle: <a href=""https://jsfiddle.net/pahund/1bobtkyp/3/"" rel=""nofollow noreferrer"">https://jsfiddle.net/pahund/1bobtkyp/3/</a></p>
+"
+"47593903","<p>I'm converting SQL Procedure to node js function.</p>
+
+<p>My converting function is too long, so readability is bad.</p>
+
+<p>I want to split small function, but don't know how I can refactoring it.
+I use async.wait because several SQL statement should be run serial.</p>
+
+<pre><code>exports.cancelDansok =  function cancelDansok(dansokSeqNo, callback) {
+       var tasks = [
+         function (callback) {
+           models.DansokHist.max('SerialNo', {
+             where: { DansokSeqNo: dansokSeqNo}
+           })
+           .then(max =&gt; {
+             if (!max) {
+               callback(null, 1);
+             } else {
+               callback(null, max+1);
+             }
+           })
+           .error(err =&gt; {
+             log.info(err);
+             return callback({status:400, message:'select dansokhisttbl failed.'});
+           });          
+         },
+         function (serialNo, callback) {
+            ....
+           })
+           .then(() =&gt; {
+             ....
+           })
+           .then( feeVBankList =&gt; {
+             callback(null);
+           })
+           .error(err =&gt; {
+             return callback({status:400, message:'update dansokfeetbl failed.'});
+           });          
+         },
+         function (callback) {        
+           ....
+         },
+         function (callback) {        
+           ....
+         },
+         function (callback) {        
+           ....
+         },
+         function (callback) {        
+           ....
+         }
+       ];
+
+       async.waterfall(tasks, function(err, success) {
+         if (err) {
+           return callback(err);
+         } else {
+           return callback(success);
+         }
+       });
+     }
+</code></pre>
+
+<p>What would be the best practice in my case?</p>
+"
+"47592448","<p>Let's say I am testing a function belonging to Utils module like this</p>
+
+<pre><code>defmodule Test do
+  alias Module.Utils
+
+  test ""test 1"" do
+    Utils.some_function?(...)
+  end
+
+  test ""test 2"" do
+    Utils.some_function?(...)
+  end
+end
+</code></pre>
+
+<p>Can I refactor or simplify that function into something like:</p>
+
+<pre><code>import Utils.some_function as test_func()
+</code></pre>
+
+<p>So I dont have to write module name and simplify function name</p>
+"
+"47606716","<p>I am working with REST API, similar to this stub: <a href=""https://gitlab.com/snippets/1687097"" rel=""nofollow noreferrer"">Snippet 1</a> (Ruby on Rails example).</p>
+
+<p>I have existing jQuery-code on classic callbacks: <a href=""https://gitlab.com/snippets/1687096"" rel=""nofollow noreferrer"">Snippet 2</a></p>
+
+<p>which is executes with logs: </p>
+
+<pre class=""lang-none prettyprint-override""><code>case 1:
+[INFO] /api/my/action1: got rejecting signal, do not continue 
+
+case 2:
+[INFO] /api/my/action1: no rejecting signal, continue
+[INFO] /api/my/action2: no rejecting signal, continue
+[INFO] /api/my/action3: hurrah!! we got message:  Third action executed!
+
+case 3:
+[INFO] /api/my/action1: no rejecting signal, continue
+[ERROR] Got error with message: Unexpected error
+</code></pre>
+
+<p>I want to refactor this code to promises:</p>
+
+<pre><code>function ajxGet(url){
+  return $.ajax({
+    url,
+    dataType: 'JSON'
+  })
+}
+
+export function makeThreeAsyncQueries(){
+  ajxGet('/api/my/action1')
+    .then(response1 =&gt; {
+      if(response1.do_reject_other_actions){
+        console.log('[INFO] /api/my/action1: got rejecting signal, do not continue');
+        return Promise.reject({mute: true});
+      }else{
+        console.log('[INFO] /api/my/action1: no rejecting signal, continue');
+        return ajxGet('/api/my/action2');
+      }
+    })
+    .then(response2 =&gt; {
+      if(response2.do_reject_other_actions){
+        console.log('[INFO] /api/my/action2: got rejecting signal, do not continue');
+        return Promise.reject({mute: true});
+      }else{
+        console.log('[INFO] /api/my/action2: no rejecting signal, continue');
+        return ajxGet('/api/my/action3');
+      }
+    })
+    .then(response3 =&gt; {
+      console.log('[INFO] /api/my/action3: hurrah!! we got message: ', response3.message);
+    })
+    .fail((err) =&gt; {
+      if(err &amp;&amp; err.mute){
+        console.log('[INFO] normal chain break.');
+        return
+      }
+      console.info('[ERROR] Got error with message:', err.responseJSON.message);
+    });
+}
+</code></pre>
+
+<p>The problem is that <code>Promise.reject({mute: true});</code> does not working, and I have these logs: </p>
+
+<pre class=""lang-none prettyprint-override""><code>[INFO] /api/my/action1: got rejecting signal, do not continue           &lt;&lt;-- SHOULD STOP HERE
+[INFO] /api/my/action2: no rejecting signal, continue
+   Uncaught (in promise) Object {mute: true}
+   &lt;...callstack here...&gt;
+[INFO] /api/my/action3: hurrah!! we got message:  Third action executed!
+</code></pre>
+"
+"47608334","<p>I am trying to formalize the simply typed lambda calculus in Coq and have a problem stating the lemma that the set of free variables of a well-typed expression in an empty context is empty.</p>
+
+<p>Here is the relevant part of may formalisation.</p>
+
+<pre><code>Require Import Coq.Arith.Arith.
+Require Import Coq.MSets.MSets.
+Require Import Coq.FSets.FMaps.
+
+Inductive type : Set :=
+| tunit : type
+| tfun : type -&gt; type -&gt; type.
+
+Module Var := Nat.
+Definition var : Set := Var.t.
+Module VarSet := MSetAVL.Make Var.
+Module VarSetFacts := MSetFacts.Facts VarSet.
+Module VarSetProps := MSetProperties.Properties VarSet.
+Module Context := FMapWeakList.Make Var.
+Module ContextFacts := FMapFacts.Facts Context.
+Module ContextProps := FMapFacts.Properties Context.
+Definition context := Context.t type.
+Definition context_empty : context := Context.empty type.
+
+Inductive expr : Set :=
+| eunit : expr
+| evar : var -&gt; expr
+| eabs : var -&gt; type -&gt; expr -&gt; expr
+| eapp : expr -&gt; expr -&gt; expr.
+
+Fixpoint free_vars (e : expr) : VarSet.t :=
+  match e with
+  | eunit =&gt; VarSet.empty
+  | evar y =&gt; VarSet.singleton y
+  | eabs y _ e =&gt; VarSet.remove y (free_vars e)
+  | eapp e1 e2 =&gt; VarSet.union (free_vars e1) (free_vars e2)
+  end.
+
+Inductive has_type : context -&gt; expr -&gt; type -&gt; Prop :=
+| has_type_unit : forall c,
+    has_type c eunit tunit
+
+| has_type_var : forall c x t,
+    Context.find x c = Some t -&gt;
+    has_type c (evar x) t
+
+| has_type_abs : forall c x t1 t2 e,
+    has_type (Context.add x t1 c) e t2 -&gt;
+    has_type c (eabs x t1 e) (tfun t1 t2)
+
+| has_type_app : forall c e1 e2 t1 t2,
+    has_type c e1 (tfun t1 t2) -&gt;
+    has_type c e2 t1 -&gt;
+    has_type c (eapp e1 e2) t2.
+
+Check has_type_ind.
+
+Lemma has_type_empty_context_free_vars : forall e t,
+  has_type context_empty e t -&gt;
+  VarSet.Empty (free_vars e).
+Proof.
+  intros e t H.
+  remember context_empty as c.
+  induction H; subst.
+  - apply VarSet.empty_spec.
+  - rewrite ContextFacts.empty_o in H.
+    congruence.
+  - simpl.
+    admit. (* Wrong induction hypothesis *)
+  - simpl.
+    rewrite VarSetProps.empty_union_1; auto.
+Admitted.
+</code></pre>
+
+<p>The problem seems to be that my induction hypothesis is wrong. It merely says</p>
+
+<pre><code>Context.add x t1 context_empty = context_empty -&gt;
+  VarSet.Empty (free_vars e)
+</code></pre>
+
+<p>which is trivially true, since the hypothesis is false. I tried an induction over the expression and to reformulate the theorem to get the right induction hypothesis, but could not figure it out.</p>
+
+<p>What is the correct way to define and prove this property?</p>
+
+<h1>Solution</h1>
+
+<p>Following Yves' <a href=""https://stackoverflow.com/a/47608334/823955"">answer</a> and thanks to ejgallego's comment, I first proved a generalized lemma.</p>
+
+<pre><code>Lemma has_type_free_vars_in_context : forall c e t,
+  has_type c e t -&gt;
+  VarSet.For_all (fun x =&gt; Context.mem x c = true) (free_vars e).
+Proof.
+  intros c e t H.
+  induction H; simpl.
+  - intros x contra.
+    apply VarSetFacts.empty_iff in contra.
+    inversion contra.
+  - intros y H2.
+    apply Context.mem_1.
+    apply ContextFacts.in_find_iff.
+    apply VarSet.singleton_spec in H2.
+    subst.
+    rewrite H.
+    discriminate.
+  - intros y H2.
+    unfold VarSet.For_all in *.
+    apply VarSet.remove_spec in H2 as [H2 H3].
+    specialize (IHhas_type y H2).
+    rewrite ContextFacts.add_neq_b in IHhas_type; auto.
+  - intros x H2.
+    apply VarSet.union_spec in H2 as [H2 | H2]; auto.
+Qed.
+</code></pre>
+
+<p>And used to use it to prove my theorem.</p>
+
+<pre><code>Lemma has_type_empty_context_free_vars : forall e t,
+  has_type context_empty e t -&gt;
+  VarSet.Empty (free_vars e).
+Proof.
+  intros e t H.
+  apply has_type_free_vars_in_context in H.
+  induction (free_vars e) using VarSetProps.set_induction.
+  - assumption.
+  - rename t0_1 into s.
+    rename t0_2 into s'.
+    apply VarSetProps.Add_Equal in H1.
+    unfold VarSet.For_all in *.
+    specialize (H x).
+    rewrite H1 in H.
+    specialize (H (VarSetFacts.add_1 s eq_refl)).
+    Search (Context.empty).
+    rewrite ContextFacts.empty_a in H.
+    discriminate.
+Qed.
+</code></pre>
+
+<p>It now works. Thank you very much. Is there a way to refactor this solution for more automation, better readability, better maintenance, etc.?</p>
+"
+"47608197","<p>I have this situation with legacy project. Suppose I have rails model: </p>
+
+<pre><code>rails g model entity name:string
+</code></pre>
+
+<p>In that model there is <code>MAIN_ENTITY</code> constant:</p>
+
+<pre><code>class Entity &lt; ActiveRecord::Base  
+  MAIN_ENTITY_ID = 1
+  MAIN_ENTITY = Entity.find(MAIN_ENTITY_ID)
+end
+</code></pre>
+
+<p>Now I want to cover <code>Entity</code>-model with <a href=""http://rspec.info/"" rel=""nofollow noreferrer"">rspec</a> tests, but first I need factory. I created this factory: </p>
+
+<pre><code>FactoryGirl.define do
+  factory :entity do
+    name { FFaker::Company.name }
+  end
+end
+</code></pre>
+
+<p>And when I running <code>create(:entity)</code> inside <a href=""http://rspec.info/"" rel=""nofollow noreferrer"">rspec</a> test, I am getting this error: </p>
+
+<pre class=""lang-none prettyprint-override""><code>Failure/Error: MAIN_ENTITY = Entity.find(MAIN_ENTITY_ID)
+
+ActiveRecord::RecordNotFound:
+  Couldn't find Entity with 'id'=1
+</code></pre>
+
+<p>How to fix that without refactoring code and keeping <code>MAIN_ENTITY</code> constant?</p>
+"
+"47608246","<p>I have been following an outdated tutorial (<a href=""https://www.youtube.com/watch?v=UHTBnTg4rno&amp;list=PLtKjv92L0ihAJ90_NbqCINRu4uKy3RJJU&amp;index=13"" rel=""nofollow noreferrer"">this playlist in particular</a>) and I got lost switching between AngularFire 4.0 and AngularFire 5.0.
+It's a simple CRUD application which implements Firebase.
+The code is uncouth, but I am able to view and post to the database.</p>
+
+<p>
+I'm trying to delete an item from a node using the key in firebase, but I'm getting the error </p>
+
+<p><code>Property 'remove' does not exist on type 'Observable&lt;any[]&gt;'.</code></p>
+
+<p>Here is my <code>.ts</code> file:</p>
+
+<pre><code>import { Component } from '@angular/core';
+import { IonicPage, NavController, NavParams, ActionSheetController } from 'ionic-angular';
+import { AngularFireList, AngularFireDatabase } from 'angularfire2/database';
+import { Matatu } from '../../models/matatu/matatu.interface';
+import { Observable } from 'rxjs/Observable';
+
+@IonicPage()
+@Component({
+  selector: 'page-owner-dash',
+  templateUrl: 'owner-dash.html',
+})
+
+export class OwnerDashPage {
+
+  matatuListRef$: Observable&lt;any[]&gt;;
+
+  constructor(public navCtrl: NavController, public navParams: NavParams, private database: AngularFireDatabase, public actionShtCrtl: ActionSheetController) {
+    this.matatuListRef$ = this.database.list('matatu-list').valueChanges();
+
+  }
+
+  ionViewDidLoad() {
+    //
+  }
+
+  selectMatatu(matatu: Matatu){
+    this.actionShtCrtl.create({
+      title: `${matatu.matNumberPlate}`,
+      buttons: [
+        {
+          text: 'Edit',
+          handler: () =&gt; {
+            //
+          }          
+        },
+        {
+          text: 'Delete',
+          role: 'destructive',
+          handler: () =&gt; {
+            this.matatuListRef$.remove(matatu.$key);
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () =&gt; {
+            //
+          }
+        }
+      ]
+    }).present();
+  }
+
+
+}
+</code></pre>
+
+<p>And here the <code>.html</code> code that displays the records.</p>
+
+<pre><code>...
+&lt;ion-list&gt;
+    &lt;button ion-item *ngFor=""let ma3 of matatuListRef$ | async"" (click)=""selectMatatu(ma3)""&gt;
+      &lt;h2 style=""font-weight: bold;""&gt;{{ma3.matNumberPlate}}&lt;/h2&gt;
+      &lt;h3&gt;Driver: {{ma3.matDriver}}&lt;/h3&gt;
+      &lt;h3&gt;Status: {{ma3.matStatus}}&lt;/h3&gt;
+    &lt;/button&gt;
+  &lt;/ion-list&gt;
+...
+</code></pre>
+
+<p>
+I know <code>FirebaseListObservable</code> was refactored to <code>AngularFireList</code>, but I assigned my variable to the type <code>Observable</code> instead.</p>
+
+<p><code>matatuListRef$: Observable&lt;any[]&gt;;</code></p>
+
+<p>Bottom line, I get the error <code>TypeError: _this.matatuListRef$.remove is not a function</code> on the browser's console when I try to delete the record.</p>
+
+<p>How can I resolve this? 
+All suggestions and approaches are highly welcomed,but I would really appreciate it if the solutions focused on using <code>AngularFireList</code>.</p>
+"
+"47622397","<p>I need to know how to add data from  database to DataTable-Bootstrap</p>
+
+<p>This is my table:</p>
+
+<pre><code>&lt;div class=""container""&gt;
+&lt;button id=""addRow""&gt;Add new row&lt;/button&gt;
+ &lt;table id=""example"" class=""display"" cellspacing=""0"" width=""100%""&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Column 1&lt;/th&gt;
+            &lt;th&gt;Column 2&lt;/th&gt;
+            &lt;th&gt;Column 3&lt;/th&gt;
+
+        &lt;/tr&gt;
+    &lt;/thead&gt; 
+&lt;/table&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>I have a script that add from my database the data automatically to DataTable-Bootstrap</p>
+
+<pre><code>&lt;script&gt;
+var tblusuario = document.getElementById('example');
+var databaseRef = firebase.database().ref('Usuarios/');
+//var databaseRef = FirebaseFirestore.database().ref('/users');
+var rowindex = 1;
+
+databaseRef.once('value', function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+
+        var childKey = childSnapshot.key;
+        var childData = childSnapshot.val();
+
+        var row = tblusuario.insertRow(rowindex);
+        var cellIndice= row.insertCell(0);
+        var cellId = row.insertCell(1);
+        var cellNombre = row.insertCell(2);
+
+
+        cellIndice.innerHTML=rowindex;
+        cellId.appendChild(document.createTextNode(childKey));
+        cellNombre.appendChild(document.createTextNode(childData.usuario));
+
+            rowindex = rowindex + 1;
+
+
+    });
+});
+</code></pre>
+
+<p></p>
+
+<p><strong>BUT THE TABLE DOES NOT RECOGNIZE IT</strong>, I can't use the use the functionalities of DataTable</p>
+
+<p><a href=""https://i.stack.imgur.com/Xy4o3.png"" rel=""nofollow noreferrer"">See the table</a></p>
+
+<p>After this, I have been studying for 3 days to change the code to put it in the table</p>
+
+<p>I have took this reference(it's okey)</p>
+
+<pre><code>   &lt;button id=""addRow""&gt;Add new row&lt;/button&gt;
+   &lt;script&gt;
+
+   $(document).ready(function() {
+   var t = $('#example').DataTable();
+   var counter = 1;
+
+   $('#addRow').on( 'click', function () {
+    t.row.add( [
+        counter +'.1',
+        counter +'.2',
+        counter +'.3',
+
+    ] ).draw( false );
+
+       counter++;
+   } );
+
+   // Automatically add a first row of data
+   $('#addRow').click();
+    } );
+</code></pre>
+
+<p></p>
+
+<p>So far, I want to refactor my code in order funtion to dataTable</p>
+
+<p>I have this, but it doesn´t work :(</p>
+
+<pre><code>&lt;script&gt;
+
+
+$(document).ready(function() {
+var t = $('#example').DataTable();
+var counter = 1;
+var databaseRef = firebase.database().ref('Usuarios/');
+var rowindex = 1;
+ databaseRef.once('value', function(snapshot) {
+snapshot.forEach(function(childSnapshot) {
+var childKey = childSnapshot.key;
+var childData = childSnapshot.val();
+
+var addhere = childKey;
+var b = childData.usuario;
+
+            });
+    });
+
+  $('#addRow').on( 'click', function () {
+
+    t.row.add( [
+        addhere,//PROBLEM
+        'hola',
+        '.3',
+    ] ).draw( false );
+
+
+   } );
+
+  // Automatically add a first row of data
+  $('#addRow').click();
+ } );
+</code></pre>
+
+<p></p>
+
+<p>Someone can help me with the code?
+Thanks</p>
+"
+"47610301","<p>reference: <a href=""https://redux-form.com/6.7.0/examples/initializefromstate/"" rel=""nofollow noreferrer"">https://redux-form.com/6.7.0/examples/initializefromstate/</a></p>
+
+<p>I am trying to implement a profile form that updates with initial data that is fetched from an api endpoint.</p>
+
+<p>I've been able to get the example to work when referencing the redux-form example above. However when I refactor it to use compose 'initialValues' does not get inserted into the fields. </p>
+
+<p>This code does not work, initialValues contains data but does not insert into form fields.</p>
+
+<pre><code>export default compose(
+    reduxForm({
+        form: 'initializeFromState',
+        enableReinitialize : true
+    }),
+    connect(state =&gt; ({
+        initialValues: state.profile, // pull initial values from account reducer
+    }), actions)
+)(EditProfile);
+</code></pre>
+
+<p>However this code works which is just slightly modified from reference example. 'initialValues' also contains data.</p>
+
+<pre><code>EditProfile = reduxForm({
+    form: 'initializeFromState', 
+    enableReinitialize: true
+})(EditProfile);
+
+EditProfile = connect(
+    state =&gt; ({
+        initialValues: state.profile, 
+    }),
+    actions, 
+)(EditProfile);
+
+export default EditProfile;
+</code></pre>
+
+<p>It's looks similar to me but maybe I can't use compose like this? </p>
+"
+"47627754","<p>I integrate swagger2 to springboot project, because all of my endpoints authorization is by OAuth2, so I need to add Authorization header to every method, like the following code:</p>
+
+<pre><code>@ApiImplicitParams({     
+    @ApiImplicitParam(paramType=""header"",name=""Authorization"",dataType=""String"",required=true, value=""Bearer {access-token}"")
+})
+</code></pre>
+
+<p>These same annotations are too many, can I have some ways to refactor them?</p>
+
+<p>Swagger2 Docket code:</p>
+
+<pre><code>@Bean
+public Docket createRestApi() {
+    return new Docket(DocumentationType.SWAGGER_2)
+            .apiInfo(apiInfo())
+            .ignoredParameterTypes(TokenInfo.class, HttpServletRequest.class, HttpServletResponse.class)
+            .select()
+            .apis(RequestHandlerSelectors.basePackage(""com.xxx.yyy.resource""))
+            .paths(PathSelectors.any())
+            .build();
+}
+</code></pre>
+"

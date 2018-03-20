@@ -2,11 +2,11 @@ import pandas as pd
 from ClassCleaner import TextCleaner
 import nltk
 
-posts = pd.read_csv('posts.csv')
+posts = pd.read_csv('postsUnico.csv')
 
 questionText = posts['Text']
 
-answerText = posts['AnswerAccepted']
+#answerText = posts['AcceptedAnswerId']
 
 cleaner = TextCleaner()
 
