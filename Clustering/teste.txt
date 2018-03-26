@@ -1,0 +1,29 @@
+I have a picture gallery where after every three pictures, an ad is displayed gotta pay those bills .
+
+So in an example scenario, my gallery would have 11 slides, of which there are 9 pictures and 2 ads, like this:
+
+ ! gallery 1 1 
+
+In the top row of this drawing are the zero-bases indexes of the slides, which I have in an array.
+
+What I need to come up with now is a formula to calculate the index of the picture corresponding to a given slide ID the numbers in the bottom row.
+
+So for , I need , for , I need and for , the result would be.
+
+For a slide that contains an ad, I would like to have the index of the last pic, so for .
+
+I do have a working solution already, where I just use a loop, but this seems really lame and cumbersome:
+
+ 
+
+I'm sure there is a much more elegant solution with a simple math formula, so basically, it's more a math question than a JavaScript question:
+
+**How can I refactor the above code to avoid the loop and calculate the number through a math formula?**
+
+I have tried something like this:
+
+ const picIndex = Math.floor slideIndex / adInterval.
+
+But that gives me incorrect values which are more and more off as slide index increases.
+
+ 1 : https://i.stack.imgur.com/IR4Nm.png

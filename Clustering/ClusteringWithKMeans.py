@@ -2,9 +2,9 @@ import pandas as pd
 from ClassCleaner import TextCleaner
 import nltk
 
-posts = pd.read_csv('postsUnico.csv')
+posts = pd.read_csv('PostBody.csv')
 
-questionText = posts['Text']
+questionText = posts['Body']
 
 #answerText = posts['AcceptedAnswerId']
 

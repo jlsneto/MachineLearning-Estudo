@@ -1,4 +1,5 @@
 #https://gitlab.com/gabrielsarmento/PythonTextFilter
+#adicionado algumas expressões regulares
 
 class TextCleaner:
 
@@ -10,12 +11,14 @@ class TextCleaner:
         body = str(body)
         import re
         regex = [
+			[r'(www\.|http[s]:).+(\.[0-9A-Za-z/]+)',''],#remove links
+			[r'[\d+]',''],
+			[r'[\*\+\-:;()]',' '],
+			[r'<code>[^*]*?</code>',' '],#funcionando
+			[r'</?[apredivhs].*?>',' '],
+			[r'\s+?',' '],
+			
 
-	    [r'<!--[^*]*-->',' '],
-            [r'`.+?`',' '],
-
-            
-            [r'<code>.+?</code>',' '],
             [r'<[^>]+>\s+(?=<)|<[^>]+>',''],
             [r'&#xA;',' '],
             [r';','.'],
@@ -32,15 +35,6 @@ class TextCleaner:
             body = re.sub(r[0],r[1],body)
 
         return body
-"""
-   def filterNoRegex(self, body):
-
-       body = str(body)
-       tags = [
-            '<div class=""snippet-code"">'
-           ]
-       posicaoInicialDoCodigo = [
-"""
 
 if __name__ == '__main__':
     from pprint import pprint
