@@ -11,12 +11,13 @@ class TextCleaner:
         body = str(body)
         import re
         regex = [
-			[r'(www\.|http[s]:).+(\.[0-9A-Za-z/]+)',''],#remove links
+			[r'(www\.|http[s]:).+(\.[0-9A-Za-z/]+)',''],
 			[r'[\d+]',''],
 			[r'[\*\+\-:;()]',' '],
-			[r'<code>[^*]*?</code>',' '],#funcionando
+			[r'<code>[^*]*?</code>',' '],
 			[r'</?[apredivhs].*?>',' '],
 			[r'\s+?',' '],
+			[r'[^\x00-\x7F]+',' '], #remove UNICODE
 			
 
             [r'<[^>]+>\s+(?=<)|<[^>]+>',''],

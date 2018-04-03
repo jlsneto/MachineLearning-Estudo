@@ -1,0 +1,23 @@
+-- CreationDateStart =  '12/01/2017'
+-- CreationDateEnd = '12/31/2017'
+-- Searchword = '%refactor%'
+DECLARE @CreationDateStart datetime = '12/01/2017'
+DECLARE @CreationDateEnd datetime = '12/31/2017'
+DECLARE @SearchWord nvarchar(30) = '%refactor%'
+
+SELECT top(100)
+a.Title,
+a.Body,
+(SELECT b.body FROM posts b WHERE b.id = a.AcceptedAnswerId) as AnswerAccepted
+FROM Posts a
+INNER JOIN PostHistory ON a.Id = PostHistory.PostId
+WHERE 
+a.CreationDate >= @CreationDateStart and
+a.CreationDate <= @CreationDateEnd and
+(
+a.Title like @SearchWord or
+a.Body Like @SearchWord or
+a.Tags Like @SearchWord
+) 
+and PostHistoryTypeId = '2' AND a.ParentId IS NULL AND AcceptedAnswerId is not null
+ORDER BY a.id
