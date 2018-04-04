@@ -57,12 +57,12 @@ for i in questionTextClean:
 
 vocab_frame = pd.DataFrame({'words': totalvocab_tokenized}, index = totalvocab_stemmed)
 
-print('there are' + str(vocab_frame.shape[0]) + 'items in vocab_frame')
+print('Quantidade de items em vocab_frame: ' + str(vocab_frame.shape[0]))
 print(vocab_frame.head())
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-tfidf_vectorizer = TfidfVectorizer(max_df=0.8, max_features = 200000,
+tfidf_vectorizer = TfidfVectorizer(max_df=0.8, max_features = 20000,
                                    min_df=0.2, stop_words='english',
                                    use_idf=True, tokenizer=tokenize_and_stem,ngram_range=(1,3))
 
@@ -73,7 +73,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 dist = 1 - cosine_similarity(tfidf_matrix)
 
 from sklearn.cluster import KMeans
-num_clusters = 5
+num_clusters = 4
 km = KMeans(n_clusters=num_clusters)
 km.fit(tfidf_matrix)
 clusters = km.labels_.tolist()
@@ -86,27 +86,33 @@ km = joblib.load('doc_cluster.pkl')
 clusters = km.labels_.tolist()
 
 postsFrame = { 'Title':titleTextClean, 'Question': questionTextClean, 'AnswerAccepted': answerTextClean, 'Cluster': clusters}
-frame = pd.DataFrame(postsFrame, index = [clusters], columns = ['Title','Body', 'AnswerAccepted','Cluster'])
-
-#grouped = frame['Title'].groupby(frame['Cluster'])
-
-#grouped.mean()
+frame = pd.DataFrame(postsFrame, index = [clusters], columns = ['Title','Question', 'AnswerAccepted','Cluster'])
 
 order_centroids = km.cluster_centers_.argsort()[:,::-1]
 
 for i in range(num_clusters):
-    print("CLUSTER %d words:" %i, end='')
+    print("CLUSTER %d words:" %i)
 
     for ind in order_centroids[i, :6]:
-        print(' %s' %vocab_frame.ix[terms[ind].split(' ')].values.tolist()[0][0].encode('utf-8','ignore'), end=',')
+        print(' %s' %vocab_frame.ix[terms[ind].split(' ')].values.tolist()[0][0],end='\n')
         print()
         print()
 
-    print("CLUSTER %d titles:" %i, end='')
+    print("CLUSTER %d Titles:" %i)
     for title in frame.ix[i]['Title'].values.tolist():
-        print(' %s,' % title, end='')
+        print(' %s' % title)
     print()
     print()
+print("Prediction")
+
+Y = tfidf_vectorizer.transform(["I have a picture gallery where after every three pictures, an ad is displayed gotta pay those bills . So in an example scenario, my gallery would have slides, of which there are pictures and ads, like this In the top row of this drawing are the zerobased indexes of the slides, which I have in an array. What I need to come up with now is a formula to calculate the index of the picture corresponding to a given slide ID the numbers in the bottom row. So for , I need , for , I need and for , the result would be. For a slide that contains an ad, I would like to have the index of the last pic, so for \u2192. I do have a working solution already, where I just use a loop, but this seems really lame and  with a simple math formula, so basically, refactor the above code to avoid the loop and calculate the number through a math formula?"])
+prediction = km.predict(Y)
+print(prediction)
+
+Y = tfidf_vectorizer.transform(["refactoring"])
+prediction = km.predict(Y)
+print(prediction)
+
 '''
 import matplotlib.pyplot as plt
 import matplotlib as mpl
