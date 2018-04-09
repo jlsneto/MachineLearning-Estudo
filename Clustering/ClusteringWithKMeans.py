@@ -4,7 +4,7 @@ import nltk
 from nltk.stem.snowball import SnowballStemmer
 import re
 import os
-import mpld3
+#import mpld3
 
 posts = pd.read_csv('PostBody.csv')
 
@@ -26,7 +26,7 @@ answerTextClean = [cleaner.filter(answer) for answer in answerText]
 stopwords = nltk.corpus.stopwords.words('english')
 stemmer = SnowballStemmer('english')
 
-
+#tokenizer e o stemmer
 def tokenize_and_stem(text):
     tokens = [word for sent in nltk.sent_tokenize(text) for word in nltk.word_tokenize(sent)]
     filtered_tokens = []
@@ -49,13 +49,13 @@ totalvocab_stemmed = []
 totalvocab_tokenized = []
 
 for i in questionTextClean:
-    allwords_stemmed = tokenize_and_stem(i)
-    totalvocab_stemmed.extend(allwords_stemmed)
+    todas_palavras_stemmed = tokenize_and_stem(i)
+    totalvocab_stemmed.extend(todas_palavras_stemmed)
 
-    allwords_tokenized = tokenize_only(i)
-    totalvocab_tokenized.extend(allwords_tokenized)
+    todas_palavras_tokenized = tokenize_only(i)
+    totalvocab_tokenized.extend(todas_palavras_tokenized)
 
-vocab_frame = pd.DataFrame({'words': totalvocab_tokenized}, index = totalvocab_stemmed)
+vocab_frame = pd.DataFrame({'palavras': totalvocab_tokenized}, index = totalvocab_stemmed)
 
 print('Quantidade de items em vocab_frame: ' + str(vocab_frame.shape[0]))
 print(vocab_frame.head())
@@ -91,16 +91,16 @@ frame = pd.DataFrame(postsFrame, index = [clusters], columns = ['Title','Questio
 order_centroids = km.cluster_centers_.argsort()[:,::-1]
 
 for i in range(num_clusters):
-    print("CLUSTER %d words:" %i)
+    print("CLUSTER %d Palavras:" %i)
 
     for ind in order_centroids[i, :6]:
         print(' %s' %vocab_frame.ix[terms[ind].split(' ')].values.tolist()[0][0],end='\n')
         print()
         print()
 
-    print("CLUSTER %d Titles:" %i)
-    for title in frame.ix[i]['Title'].values.tolist():
-        print(' %s' % title)
+    print("CLUSTER %d Text:" %i)
+    for question in frame.ix[i]['Question'].values.tolist():
+        print(' %s' % question[:40])
     print()
     print()
 print("Prediction")
